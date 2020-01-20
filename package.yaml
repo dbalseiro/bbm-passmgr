@@ -1,0 +1,52 @@
+name:                bbm-passmgr
+version:             0.1.0.0
+github:              "dbalseiro/bbm-passmgr"
+license:             BSD3
+author:              "Diego Balseiro"
+maintainer:          "dbalseiro@stackbuilders.com"
+copyright:           "2020 Stack Builders"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/githubuser/bbm-passmgr#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+
+ghc-options:
+- -Werror
+- -Wall
+
+library:
+  source-dirs: src
+
+executables:
+  bbm-passmgr-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - bbm-passmgr
+
+tests:
+  bbm-passmgr-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - bbm-passmgr

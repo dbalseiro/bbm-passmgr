@@ -21,15 +21,53 @@ description:         Please see the README on GitHub at <https://github.com/gith
 
 dependencies:
 - base >= 4.7 && < 5
+  # Polysemy
+- polysemy
+- polysemy-plugin
+- polysemy-zoo
 
 ghc-options:
-- -Werror
+  # Recommended settings for polysemy
+- -O2
+- -flate-specialise
+- -fspecialise-aggressively
+- -fplugin=Polysemy.Plugin
+# Useful warnings
 - -Wall
+- -Werror
+- -Wcompat
+- -Wredundant-constraints
+- -Wincomplete-record-updates
+- -Wincomplete-uni-patterns
+default-extensions:
+# Recommended extensions for polysemy
+- DataKinds
+- FlexibleContexts
+- GADTs
+- LambdaCase
+- PolyKinds
+- RankNTypes
+- ScopedTypeVariables
+- TypeApplications
+- TypeOperators
+- TypeFamilies
+- TemplateHaskell
+
+# Deriving extensions
+- GeneralizedNewtypeDeriving
+- DeriveGeneric
+
+# Misc extensions
+- OverloadedStrings
 
 library:
   source-dirs: src
   dependencies:
   - scotty
+  - text
+  - bytestring
+  - binary
+  - http-types
 
 executables:
   bbm-passmgr-exe:

@@ -28,6 +28,8 @@ ghc-options:
 
 library:
   source-dirs: src
+  dependencies:
+  - scotty
 
 executables:
   bbm-passmgr-exe:

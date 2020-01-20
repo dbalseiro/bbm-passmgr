@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Server (runApp) where
+module Server (runApp, app) where
 
 import qualified Web.Scotty as S
 

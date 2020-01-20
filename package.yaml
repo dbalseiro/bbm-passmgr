@@ -52,3 +52,7 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - bbm-passmgr
+    - wai
+    - hspec
+    - hspec-wai
+    - scotty

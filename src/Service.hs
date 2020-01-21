@@ -1,11 +1,14 @@
-module Service (storePassword, validatePassword) where
+module Service (storePassword) where
 
 import Types
 
-import Data.Text.Lazy (Text)
+import Polysemy (Sem, Members)
+import Polysemy.KVStore (KVStore)
+import qualified Polysemy.KVStore as Store
 
-storePassword :: Username -> Password -> Either Text ()
-storePassword = undefined
-
-validatePassword :: Username -> Password -> Either Text Bool
-validatePassword = undefined
+storePassword
+  :: Members '[KVStore Username Password] r
+  => Username
+  -> Password
+  -> Sem r ()
+storePassword = Store.writeKV

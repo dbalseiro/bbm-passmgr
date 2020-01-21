@@ -68,6 +68,8 @@ library:
   - bytestring
   - binary
   - http-types
+  - containers
+  - hedis
 
 executables:
   bbm-passmgr-exe:

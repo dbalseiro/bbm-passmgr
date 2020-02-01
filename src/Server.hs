@@ -2,7 +2,7 @@
 
 module Server (runApp) where
 
-import Service (storePassword, validatePassword)
+import Effects (runStorePassword, runValidatePassword)
 
 import qualified Web.Scotty as S
 
@@ -32,14 +32,14 @@ api conn = do
   S.post "/store" $ do
     user <- S.param "user"
     pass <- S.param "pass"
-    liftIO (Hedis.runRedis conn $ storePassword user pass) >>= \case
+    liftIO (runStorePassword conn user pass) >>= \case
       Left err -> serverError err
       Right () -> S.text "Password stored"
 
   S.post "/validate" $ do
     user <- S.param "user"
     pass <- S.param "pass"
-    liftIO (Hedis.runRedis conn $ validatePassword user pass) >>= \case
+    liftIO (runValidatePassword conn user pass) >>= \case
       Left err    -> serverError err
       Right False -> invalidPassword
       Right True  -> S.text "OK"

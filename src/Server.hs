@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Server (runApp, app) where
+module Server (runApp) where
 
 import Service (storePassword, validatePassword)
 
@@ -8,9 +8,13 @@ import qualified Web.Scotty as S
 
 import Network.HTTP.Types.Status (status500, status400, statusMessage)
 
+import Control.Monad.IO.Class (liftIO)
+
 import qualified Data.Text.Lazy as T
 import qualified Data.Text.Encoding as T
 
+import Database.Redis (Connection)
+import qualified Database.Redis as Hedis
 
 type Port = Int
 
@@ -18,25 +22,28 @@ runApp :: Port -> IO ()
 runApp port = runAppWith (S.scotty port)
 
 runAppWith :: (S.ScottyM () -> IO a) -> IO a
-runAppWith f = f app
+runAppWith f = withRedis $ f . api
 
-app :: S.ScottyM ()
-app = do
-  S.get "/healthcheck" $
-    S.text "I'm ok"
+withRedis :: (Connection -> IO a) -> IO a
+withRedis f = Hedis.checkedConnect Hedis.defaultConnectInfo >>= f
 
+api :: Connection -> S.ScottyM ()
+api conn = do
   S.post "/store" $ do
     user <- S.param "user"
     pass <- S.param "pass"
-    either serverError (const $ S.text "OK") (storePassword user pass)
+    liftIO (Hedis.runRedis conn $ storePassword user pass) >>= \case
+      Left err -> serverError err
+      Right () -> S.text "Password stored"
 
   S.post "/validate" $ do
     user <- S.param "user"
     pass <- S.param "pass"
-    either serverError respond (validatePassword user pass)
+    liftIO (Hedis.runRedis conn $ validatePassword user pass) >>= \case
+      Left err    -> serverError err
+      Right False -> invalidPassword
+      Right True  -> S.text "OK"
 
   where
     serverError err = S.status $ status500 { statusMessage = T.encodeUtf8 (T.toStrict err) }
-
-    respond False = S.status $ status400 { statusMessage = "Invalid Username/Password" }
-    respond True  = S.text "OK"
+    invalidPassword = S.status $ status400 { statusMessage = "Invalid Username/Password" }

@@ -6,6 +6,8 @@ import Test.Hspec
 
 import Types
 import Service
+import CryptoHash
+import Effects (runCryptoHash)
 
 import Data.Function ((&))
 import qualified Data.Map as Map
@@ -26,8 +28,11 @@ addAndValidate user pass = runWithEffects $ do
   storePassword user pass
   validatePassword user pass
 
-runWithEffects :: (forall r. Members '[KVStore Username Password] r => Sem r a) -> a
+runWithEffects
+  :: (forall r. Members '[CryptoHash, KVStore Username PasswordHash] r => Sem r a)
+  -> a
 runWithEffects pgm = pgm
+  & runCryptoHash
   & KVStore.runKVStorePurely Map.empty
   & P.run
   & snd

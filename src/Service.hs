@@ -1,22 +1,28 @@
 module Service (storePassword, validatePassword) where
 
 import Types
+import CryptoHash
+
+import Control.Monad ((<=<))
 
 import Polysemy (Sem, Members)
 import Polysemy.KVStore (KVStore)
 import qualified Polysemy.KVStore as KVStore
 
 storePassword
-  :: Members '[KVStore Username Password] r
+  :: Members '[CryptoHash, KVStore Username PasswordHash] r
   => Username
   -> Password
   -> Sem r ()
-storePassword = KVStore.writeKV
+storePassword user =
+  KVStore.writeKV user <=< makeHash
 
 validatePassword
-  :: Members '[KVStore Username Password] r
+  :: Members '[CryptoHash, KVStore Username PasswordHash] r
   => Username
   -> Password
   -> Sem r Bool
 validatePassword user pass =
-  (== Just pass) <$> KVStore.lookupKV user
+  KVStore.lookupKV user >>= \case
+    Nothing   -> return False
+    Just hash -> validateHash pass hash

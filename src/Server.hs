@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Server (runApp) where
 
 import Effects (runStorePassword, runValidatePassword)
@@ -9,9 +7,6 @@ import qualified Web.Scotty as S
 import Network.HTTP.Types.Status (status500, status400, statusMessage)
 
 import Control.Monad.IO.Class (liftIO)
-
-import qualified Data.Text.Lazy as T
-import qualified Data.Text.Encoding as T
 
 import Database.Redis (Connection)
 import qualified Database.Redis as Hedis
@@ -45,5 +40,6 @@ api conn = do
       Right True  -> S.text "OK"
 
   where
-    serverError err = S.status $ status500 { statusMessage = T.encodeUtf8 (T.toStrict err) }
+    serverError err = S.status $ status500 { statusMessage = err }
     invalidPassword = S.status $ status400 { statusMessage = "Invalid Username/Password" }
+

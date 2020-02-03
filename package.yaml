@@ -69,6 +69,7 @@ library:
   - binary
   - http-types
   - hedis
+  - cryptohash-md5
 
 executables:
   bbm-passmgr-exe:

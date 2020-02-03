@@ -69,6 +69,7 @@ library:
   - binary
   - http-types
   - hedis
+  - cryptohash-md5
 
 executables:
   bbm-passmgr-exe:
@@ -91,7 +92,7 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - bbm-passmgr
-    - wai
     - hspec
-    - hspec-wai
-    - scotty
+    - QuickCheck
+    - quickcheck-instances
+    - containers
